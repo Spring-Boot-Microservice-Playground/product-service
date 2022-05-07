@@ -74,9 +74,9 @@ public class ProductController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Slice<Product>> findProductByName(@RequestParam String name, @RequestParam(defaultValue = "1") int pageSize) {
+    public ResponseEntity<Slice<Product>> findAllProductsByNameLike(@RequestParam String name, @RequestParam(defaultValue = "1") int pageSize) {
         try {
-            Slice<Product> result = productService.findProductByName(name, pageSize);
+            Slice<Product> result = productService.findAllProductsByNameLike(name, pageSize);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);

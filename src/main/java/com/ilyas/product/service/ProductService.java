@@ -50,7 +50,7 @@ public class ProductService {
         mongoTemplate.updateFirst(query, update, Product.class);
     }
 
-    public Slice<Product> findProductByName(String name, int pageSize) throws Exception {
+    public Slice<Product> findAllProductsByNameLike(String name, int pageSize) throws Exception {
         Pageable pageable = PageRequest.ofSize(pageSize);
         Slice<Product> result = productRepository.findByName(name, pageable);
         return result;
