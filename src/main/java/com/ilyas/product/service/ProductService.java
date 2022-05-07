@@ -55,7 +55,4 @@ public class ProductService {
         Slice<Product> result = productRepository.findByName(name, pageable);
         return result;
     }
-    // public Long editProduct(Product product){
-    //     return productRepository.up;
-    // }
 }

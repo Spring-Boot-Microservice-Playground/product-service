@@ -82,9 +82,4 @@ public class ProductController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    // @GetMapping("/test")
-    // public Long testing(){
-    //     return productService.editProduct();
-    // }
 }
