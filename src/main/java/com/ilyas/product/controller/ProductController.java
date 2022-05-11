@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 @RestController
 @RequestMapping("/product")
@@ -26,6 +27,8 @@ public class ProductController {
     
     @Autowired
     ProductService productService;
+    @Autowired
+    RestTemplate restTemplate;
 
     private Sort.Direction getSortDirection(String direction) {
         if (direction.equals("asc")) {
@@ -81,5 +84,11 @@ public class ProductController {
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/test")
+    public String restTemplateTesting(){
+        String customer = restTemplate.getForObject("http://customer-service/customer/search?name=ilya", String.class);
+        return customer;
     }
 }
