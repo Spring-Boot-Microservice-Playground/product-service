@@ -3,6 +3,7 @@ package com.ilyas.product.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ilyas.product.exception.CustomException;
 import com.ilyas.product.model.Product;
 import com.ilyas.product.service.ProductService;
 
@@ -90,5 +91,11 @@ public class ProductController {
     public String restTemplateTesting(){
         String customer = restTemplate.getForObject("http://customer-service/customer/search?name=ilya", String.class);
         return customer;
+    }
+
+    @GetMapping("/exception")
+    public List<String> customExceptionTest(){
+        throw new CustomException("this is custom exception");
+        // return "works";
     }
 }
