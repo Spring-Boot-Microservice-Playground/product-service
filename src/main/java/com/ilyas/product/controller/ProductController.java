@@ -1,17 +1,17 @@
 package com.ilyas.product.controller;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.ilyas.product.exception.CustomException;
 import com.ilyas.product.model.Product;
+import com.ilyas.product.repository.ProductRepository;
 import com.ilyas.product.service.ProductService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Order;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,66 +29,50 @@ public class ProductController {
     @Autowired
     ProductService productService;
     @Autowired
+    ProductRepository productRepository;
+    @Autowired
     RestTemplate restTemplate;
-
-    private Sort.Direction getSortDirection(String direction) {
-        if (direction.equals("asc")) {
-            return Sort.Direction.ASC;
-        } else if (direction.equals("desc")) {
-            return Sort.Direction.DESC;
-        }
-
-        return Sort.Direction.ASC;
-    }
 
     @GetMapping
     public ResponseEntity<Slice<Product>> getAllProducts(
         @RequestParam(defaultValue = "0") Integer pageNo, 
         @RequestParam(defaultValue = "10") Integer pageSize,
         @RequestParam(defaultValue = "id,desc") String[] sortBy
-    ){
-        try{
-            List<Order> orders = new ArrayList<Order>();
-            orders.add(new Order(getSortDirection(sortBy[1]), sortBy[0]));
-            Slice<Product> result = productService.getAllProducts(pageNo, pageSize, orders);
-            return ResponseEntity.ok(result);
-        } catch(Exception exception){
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    ) throws Exception {
+        Slice<Product> result = productService.getAllProducts(pageNo, pageSize, sortBy);
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping
-    public ResponseEntity<Product> addNewProduct(@RequestBody Product product) {
-        try {
-            Product result = productService.addNewProduct(product);
+    public ResponseEntity<Product> addNewProduct(@RequestBody Product product)  throws Exception {
+        Product result = productRepository.save(product);
         return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
 
     @PutMapping
-    public ResponseEntity<Product> updateProduct(@RequestBody Product newProduct) {
-        try {
-            productService.findAndUpdate(newProduct);
-            return ResponseEntity.ok(newProduct);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<Product> updateProduct(@RequestBody Product newProduct)  throws Exception {
+        productService.findAndUpdate(newProduct);
+        return ResponseEntity.ok(newProduct);
+    }
+    
+    @PutMapping("/purchase")
+    public ResponseEntity<?> purchaseProduct(@RequestBody Product newProduct) {
+        Optional<Product> productRetrieved = productRepository.findById(newProduct.getId());
+        Integer updatedAmount = productRetrieved.get().getAmount() - newProduct.getAmount();
+        newProduct.setAmount(updatedAmount);
+        productService.findAndUpdate(newProduct);
+        return ResponseEntity.ok(newProduct);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Slice<Product>> findAllProductsByNameLike(@RequestParam String name, @RequestParam(defaultValue = "1") int pageSize) {
-        try {
-            Slice<Product> result = productService.findAllProductsByNameLike(name, pageSize);
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<Slice<Product>> findAllProductsByNameLike(@RequestParam String name, @RequestParam(defaultValue = "1") int pageSize)  throws Exception {
+        Pageable pageable = PageRequest.ofSize(pageSize);
+        Slice<Product> result = productRepository.findByName(name, pageable);
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/test")
-    public String restTemplateTesting(){
+    public String restTemplateTesting() throws Exception {
         String customer = restTemplate.getForObject("http://customer-service/customer/search?name=ilya", String.class);
         return customer;
     }
@@ -96,6 +80,5 @@ public class ProductController {
     @GetMapping("/exception")
     public List<String> customExceptionTest(){
         throw new CustomException("this is custom exception");
-        // return "works";
     }
 }

@@ -1,5 +1,6 @@
 package com.ilyas.product.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 // import java.util.List;
@@ -31,28 +32,30 @@ public class ProductService {
         this.productRepository = productRepository;
         this.mongoTemplate = mongoTemplate;
     }
-    
-    public Product addNewProduct(Product product) throws Exception {
-        productRepository.save(product);
-        return product;
+
+    private Sort.Direction getSortDirection(String direction) {
+        if (direction.equals("asc")) {
+            return Sort.Direction.ASC;
+        } else if (direction.equals("desc")) {
+            return Sort.Direction.DESC;
+        }
+
+        return Sort.Direction.ASC;
     }
 
-    public Slice<Product> getAllProducts(int pageNo, int pageSize, List<Order> orders) throws Exception {
+    public Slice<Product> getAllProducts(int pageNo, int pageSize, String[] sortBy) {
+        List<Order> orders = new ArrayList<Order>();
+        orders.add(new Order(getSortDirection(sortBy[1]), sortBy[0]));
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(orders));
+
         Slice<Product> result = productRepository.findAll(pageable);
         return result;
     }
 
     @Transactional
-    public void findAndUpdate(Product newProduct) throws Exception {
+    public void findAndUpdate(Product newProduct) {
         Query query = Query.query(Criteria.where("id").is(newProduct.getId()));
         Update update = new Update().set("price", newProduct.getPrice()).set("amount", newProduct.getAmount());
         mongoTemplate.updateFirst(query, update, Product.class);
-    }
-
-    public Slice<Product> findAllProductsByNameLike(String name, int pageSize) throws Exception {
-        Pageable pageable = PageRequest.ofSize(pageSize);
-        Slice<Product> result = productRepository.findByName(name, pageable);
-        return result;
     }
 }
