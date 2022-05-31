@@ -36,12 +36,8 @@ public class ProductController {
     RestTemplate restTemplate;
 
     @GetMapping
-    public ResponseEntity<Slice<Product>> getAllProducts(
-        @RequestParam(defaultValue = "0") Integer pageNo, 
-        @RequestParam(defaultValue = "10") Integer pageSize,
-        @RequestParam(defaultValue = "id,desc") String[] sortBy
-    ) throws Exception {
-        Slice<Product> result = productService.getAllProducts(pageNo, pageSize, sortBy);
+    public ResponseEntity<List<Product>> getAllProducts() throws Exception {
+        List<Product> result = productService.getAllProducts();
         return ResponseEntity.ok(result);
     }
 

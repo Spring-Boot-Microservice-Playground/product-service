@@ -10,7 +10,6 @@ import com.ilyas.product.repository.ProductRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
@@ -33,22 +32,8 @@ public class ProductService {
         this.mongoTemplate = mongoTemplate;
     }
 
-    private Sort.Direction getSortDirection(String direction) {
-        if (direction.equals("asc")) {
-            return Sort.Direction.ASC;
-        } else if (direction.equals("desc")) {
-            return Sort.Direction.DESC;
-        }
-
-        return Sort.Direction.ASC;
-    }
-
-    public Slice<Product> getAllProducts(int pageNo, int pageSize, String[] sortBy) {
-        List<Order> orders = new ArrayList<Order>();
-        orders.add(new Order(getSortDirection(sortBy[1]), sortBy[0]));
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(orders));
-
-        Slice<Product> result = productRepository.findAll(pageable);
+    public List<Product> getAllProducts() {
+        List<Product> result = productRepository.findAll();
         return result;
     }
 
