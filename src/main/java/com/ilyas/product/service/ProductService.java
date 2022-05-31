@@ -1,18 +1,11 @@
 package com.ilyas.product.service;
 
-import java.util.ArrayList;
 import java.util.List;
-
-// import java.util.List;
 
 import com.ilyas.product.model.Product;
 import com.ilyas.product.repository.ProductRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
