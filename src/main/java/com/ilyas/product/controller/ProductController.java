@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/product")
 public class ProductController {
@@ -34,7 +35,6 @@ public class ProductController {
     @Autowired
     RestTemplate restTemplate;
 
-    @CrossOrigin
     @GetMapping
     public ResponseEntity<Slice<Product>> getAllProducts(
         @RequestParam(defaultValue = "0") Integer pageNo, 
