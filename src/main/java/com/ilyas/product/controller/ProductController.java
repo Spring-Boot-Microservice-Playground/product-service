@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,12 +37,8 @@ public class ProductController {
     RestTemplate restTemplate;
 
     @GetMapping
-    public ResponseEntity<Slice<Product>> getAllProducts(
-        @RequestParam(defaultValue = "0") Integer pageNo, 
-        @RequestParam(defaultValue = "10") Integer pageSize,
-        @RequestParam(defaultValue = "id,desc") String[] sortBy
-    ) throws Exception {
-        Slice<Product> result = productService.getAllProducts(pageNo, pageSize, sortBy);
+    public ResponseEntity<List<Product>> getAllProducts() throws Exception {
+        List<Product> result = productRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
         return ResponseEntity.ok(result);
     }
 
