@@ -6,7 +6,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProductService {
@@ -14,7 +13,6 @@ public class ProductService {
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    @Transactional
     public void findAndUpdate(Product newProduct) {
         Query query = Query.query(Criteria.where("id").is(newProduct.getId()));
         Update update = new Update().set("price", newProduct.getPrice()).set("amount", newProduct.getAmount());
